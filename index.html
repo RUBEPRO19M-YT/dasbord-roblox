@@ -3,74 +3,213 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Panel de Control Roblox - Login</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+    <title>Panel Roblox</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <style>
-        /* Estilos adicionales */
-        body {
-            font-family: 'Arial', sans-serif;
-        }
-
         .hidden {
             display: none;
         }
+
+        .tab {
+            display: none;
+        }
+
+            .tab.active {
+                display: block;
+            }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <!-- Pantalla de login -->
-    <div id="loginScreen" class="fixed inset-0 bg-white flex flex-col justify-center items-center">
-        <div class="bg-gray-200 p-8 rounded shadow-md w-80">
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 bg-white flex justify-center items-center">
+        <div class="bg-gray-200 p-6 rounded shadow-md w-80">
             <h2 class="text-xl font-bold mb-4 text-center">Iniciar Sesión</h2>
-            <input id="loginUser" type="text" placeholder="Usuario de Discord" class="w-full mb-3 p-2 border rounded" />
-            <input id="loginPass" type="password" placeholder="Contraseña" class="w-full mb-4 p-2 border rounded" />
-            <button onclick="checkLogin()" class="w-full bg-blue-600 text-white px-4 py-2 rounded">Entrar</button>
-            <p id="loginError" class="text-red-600 mt-2 hidden text-sm text-center">Credenciales incorrectas</p>
+            <input id="loginUser" type="text" placeholder="Usuario" class="w-full mb-2 p-2 border rounded" />
+            <input id="loginPass" type="password" placeholder="Contraseña" class="w-full mb-3 p-2 border rounded" />
+            <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-2 rounded">Entrar</button>
+            <p id="loginError" class="text-red-600 mt-2 hidden text-center text-sm">Credenciales incorrectas</p>
         </div>
     </div>
 
-    <!-- Dashboard (oculto por defecto) -->
-    <div id="mainContent" class="flex h-screen hidden">
-        <div class="w-full p-4">
-            <h1 class="text-2xl font-bold">Bienvenido al Panel de Control</h1>
-            <p>Este es tu panel de administración.</p>
+    <!-- DASHBOARD -->
+    <div id="mainContent" class="hidden p-4">
+        <h1 class="text-2xl font-bold mb-4">Panel de Administración</h1>
+
+        <!-- Navegación -->
+        <div class="mb-4 flex flex-wrap gap-2">
+            <button onclick="showTab('usuariosTab')" class="bg-blue-500 text-white px-4 py-2 rounded">Usuarios</button>
+            <button onclick="showTab('staffTab')" class="bg-purple-500 text-white px-4 py-2 rounded">Staff</button>
+            <button onclick="showTab('incidenciasTab')" class="bg-yellow-500 text-white px-4 py-2 rounded">Incidencias</button>
+            <button onclick="showTab('multasTab')" class="bg-red-500 text-white px-4 py-2 rounded">Multas</button>
+        </div>
+
+        <!-- USUARIOS -->
+        <div id="usuariosTab" class="tab active">
+            <h2 class="text-lg font-semibold mb-2">Agregar Usuario</h2>
+            <input id="newUser" type="text" placeholder="Usuario nuevo" class="border p-2 rounded w-full mb-2" />
+            <input id="newPass" type="password" placeholder="Contraseña" class="border p-2 rounded w-full mb-2" />
+            <button onclick="addUser()" class="bg-green-600 text-white px-4 py-2 rounded">Guardar Usuario</button>
+            <p id="addUserMsg" class="text-green-700 mt-2 hidden">✅ Usuario guardado</p>
+
+            <h3 class="mt-4 font-semibold">Usuarios Registrados</h3>
+            <ul id="userList" class="list-disc ml-6 text-sm"></ul>
+        </div>
+
+        <!-- STAFF -->
+        <div id="staffTab" class="tab">
+            <h2 class="text-lg font-semibold mb-2">Agregar Staff</h2>
+            <input id="staffName" type="text" placeholder="Nombre" class="border p-2 rounded w-full mb-2" />
+            <input id="staffRole" type="text" placeholder="Rol" class="border p-2 rounded w-full mb-2" />
+            <button onclick="addStaff()" class="bg-purple-600 text-white px-4 py-2 rounded">Guardar Staff</button>
+            <ul id="staffList" class="list-disc ml-6 mt-4 text-sm"></ul>
+        </div>
+
+        <!-- INCIDENCIAS -->
+        <div id="incidenciasTab" class="tab">
+            <h2 class="text-lg font-semibold mb-2">Nueva Incidencia</h2>
+            <input id="incUser" type="text" placeholder="Usuario" class="border p-2 rounded w-full mb-2" />
+            <input id="incMotivo" type="text" placeholder="Motivo" class="border p-2 rounded w-full mb-2" />
+            <input id="incFecha" type="date" class="border p-2 rounded w-full mb-2" />
+            <button onclick="addIncidencia()" class="bg-yellow-600 text-white px-4 py-2 rounded">Guardar Incidencia</button>
+            <ul id="incList" class="list-disc ml-6 mt-4 text-sm"></ul>
+        </div>
+
+        <!-- MULTAS -->
+        <div id="multasTab" class="tab">
+            <h2 class="text-lg font-semibold mb-2">Registrar Multa</h2>
+            <input id="multaUser" type="text" placeholder="Usuario" class="border p-2 rounded w-full mb-2" />
+            <input id="multaMotivo" type="text" placeholder="Motivo" class="border p-2 rounded w-full mb-2" />
+            <input id="multaCantidad" type="number" placeholder="Cantidad (€)" class="border p-2 rounded w-full mb-2" />
+            <select id="multaEstado" class="border p-2 rounded w-full mb-2">
+                <option value="No pagada">No pagada</option>
+                <option value="Pagada">Pagada</option>
+            </select>
+            <button onclick="addMulta()" class="bg-red-600 text-white px-4 py-2 rounded">Guardar Multa</button>
+            <ul id="multaList" class="list-disc ml-6 mt-4 text-sm"></ul>
         </div>
     </div>
 
     <script>
-        async function checkLogin() {
-            const user = document.getElementById("loginUser").value.trim();
-            const pass = document.getElementById("loginPass").value.trim();
-            const errorMsg = document.getElementById("loginError");
+        // LocalStorage: carga inicial
+        const defaultUsers = [{ user: "admin", pass: "admin" }];
+        if (!localStorage.getItem("users")) {
+            localStorage.setItem("users", JSON.stringify(defaultUsers));
+        }
 
-            if (user === "" || pass === "") {
-                errorMsg.textContent = "Por favor, rellena ambos campos.";
-                errorMsg.classList.remove("hidden");
-                return;
+        function checkLogin() {
+            const u = document.getElementById("loginUser").value.trim();
+            const p = document.getElementById("loginPass").value.trim();
+            const users = JSON.parse(localStorage.getItem("users"));
+            const match = users.find(user => user.user === u && user.pass === p);
+            if (match) {
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("mainContent").classList.remove("hidden");
+                showUserList();
+                loadLists();
+            } else {
+                document.getElementById("loginError").classList.remove("hidden");
             }
+        }
 
-            try {
-                // Conecta a la API de SheetDB
-                const response = await fetch("https://sheetdb.io/api/v1/o2lxnf9sqn6ro");
-                const data = await response.json();
+        function addUser() {
+            const u = document.getElementById("newUser").value.trim();
+            const p = document.getElementById("newPass").value.trim();
+            const users = JSON.parse(localStorage.getItem("users"));
+            users.push({ user: u, pass: p });
+            localStorage.setItem("users", JSON.stringify(users));
+            document.getElementById("newUser").value = "";
+            document.getElementById("newPass").value = "";
+            document.getElementById("addUserMsg").classList.remove("hidden");
+            setTimeout(() => document.getElementById("addUserMsg").classList.add("hidden"), 2000);
+            showUserList();
+        }
 
-                // Buscar si el usuario y la contraseña coinciden
-                const userExists = data.find(entry => entry.discord_username === user && entry.password === pass);
+        function showUserList() {
+            const users = JSON.parse(localStorage.getItem("users"));
+            const list = document.getElementById("userList");
+            list.innerHTML = "";
+            users.forEach(u => {
+                const li = document.createElement("li");
+                li.textContent = u.user;
+                list.appendChild(li);
+            });
+        }
 
-                if (userExists) {
-                    // Si las credenciales son correctas, mostrar el contenido del dashboard
-                    document.getElementById("loginScreen").classList.add("hidden");
-                    document.getElementById("mainContent").classList.remove("hidden");
-                } else {
-                    // Si no, mostrar error
-                    errorMsg.classList.remove("hidden");
-                }
-            } catch (error) {
-                console.error("Error al verificar las credenciales:", error);
-                errorMsg.textContent = "Hubo un error al verificar las credenciales. Intenta de nuevo.";
-                errorMsg.classList.remove("hidden");
-            }
+        function addStaff() {
+            const name = document.getElementById("staffName").value;
+            const role = document.getElementById("staffRole").value;
+            const staff = JSON.parse(localStorage.getItem("staff") || "[]");
+            staff.push({ name, role });
+            localStorage.setItem("staff", JSON.stringify(staff));
+            document.getElementById("staffName").value = "";
+            document.getElementById("staffRole").value = "";
+            loadLists();
+        }
+
+        function addIncidencia() {
+            const user = document.getElementById("incUser").value;
+            const motivo = document.getElementById("incMotivo").value;
+            const fecha = document.getElementById("incFecha").value;
+            const incs = JSON.parse(localStorage.getItem("incidencias") || "[]");
+            incs.push({ user, motivo, fecha });
+            localStorage.setItem("incidencias", JSON.stringify(incs));
+            document.getElementById("incUser").value = "";
+            document.getElementById("incMotivo").value = "";
+            document.getElementById("incFecha").value = "";
+            loadLists();
+        }
+
+        function addMulta() {
+            const user = document.getElementById("multaUser").value;
+            const motivo = document.getElementById("multaMotivo").value;
+            const cantidad = document.getElementById("multaCantidad").value;
+            const estado = document.getElementById("multaEstado").value;
+            const multas = JSON.parse(localStorage.getItem("multas") || "[]");
+            multas.push({ user, motivo, cantidad, estado });
+            localStorage.setItem("multas", JSON.stringify(multas));
+            document.getElementById("multaUser").value = "";
+            document.getElementById("multaMotivo").value = "";
+            document.getElementById("multaCantidad").value = "";
+            loadLists();
+        }
+
+        function loadLists() {
+            const staff = JSON.parse(localStorage.getItem("staff") || "[]");
+            const incs = JSON.parse(localStorage.getItem("incidencias") || "[]");
+            const multas = JSON.parse(localStorage.getItem("multas") || "[]");
+
+            const staffList = document.getElementById("staffList");
+            const incList = document.getElementById("incList");
+            const multaList = document.getElementById("multaList");
+
+            staffList.innerHTML = "";
+            incList.innerHTML = "";
+            multaList.innerHTML = "";
+
+            staff.forEach(s => {
+                const li = document.createElement("li");
+                li.textContent = `${s.name} - ${s.role}`;
+                staffList.appendChild(li);
+            });
+
+            incs.forEach(i => {
+                const li = document.createElement("li");
+                li.textContent = `${i.user} - ${i.motivo} (${i.fecha})`;
+                incList.appendChild(li);
+            });
+
+            multas.forEach(m => {
+                const li = document.createElement("li");
+                li.textContent = `${m.user} - ${m.motivo} (${m.cantidad}€) - ${m.estado}`;
+                multaList.appendChild(li);
+            });
+        }
+
+        function showTab(id) {
+            document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
         }
     </script>
 </body>
 </html>
-
