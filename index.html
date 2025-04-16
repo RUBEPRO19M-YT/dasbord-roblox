@@ -3,74 +3,251 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Panel de Control Roblox - Login</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+    <title>Panel Roblox</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <style>
-        /* Estilos adicionales */
-        body {
-            font-family: 'Arial', sans-serif;
-        }
-
         .hidden {
             display: none;
         }
+
+        .tab {
+            display: none;
+        }
+
+            .tab.active {
+                display: block;
+            }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
-    <!-- Pantalla de login -->
-    <div id="loginScreen" class="fixed inset-0 bg-white flex flex-col justify-center items-center">
-        <div class="bg-gray-200 p-8 rounded shadow-md w-80">
-            <h2 class="text-xl font-bold mb-4 text-center">Iniciar Sesión</h2>
-            <input id="loginUser" type="text" placeholder="Usuario de Discord" class="w-full mb-3 p-2 border rounded" />
-            <input id="loginPass" type="password" placeholder="Contraseña" class="w-full mb-4 p-2 border rounded" />
-            <button onclick="checkLogin()" class="w-full bg-blue-600 text-white px-4 py-2 rounded">Entrar</button>
-            <p id="loginError" class="text-red-600 mt-2 hidden text-sm text-center">Credenciales incorrectas</p>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-96">
+            <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Iniciar Sesión</h2>
+            <div class="mb-4">
+                <label for="loginUser" class="text-sm font-medium">Usuario</label>
+                <input id="loginUser" type="text" placeholder="Usuario" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-6">
+                <label for="loginPass" class="text-sm font-medium">Contraseña</label>
+                <input id="loginPass" type="password" placeholder="Contraseña" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Entrar</button>
+            <p id="loginError" class="text-red-600 mt-3 hidden text-center text-sm">Credenciales incorrectas</p>
         </div>
     </div>
 
-    <!-- Dashboard (oculto por defecto) -->
-    <div id="mainContent" class="flex h-screen hidden">
-        <div class="w-full p-4">
-            <h1 class="text-2xl font-bold">Bienvenido al Panel de Control</h1>
-            <p>Este es tu panel de administración.</p>
+    <!-- DASHBOARD -->
+    <div id="mainContent" class="hidden p-6">
+        <h1 class="text-3xl font-semibold mb-6">Panel de Administración</h1>
+
+        <!-- Navegación -->
+        <div class="mb-8 flex gap-6">
+            <button onclick="showTab('usuariosTab')" class="w-32 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">Usuarios</button>
+            <button onclick="showTab('staffTab')" class="w-32 bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition duration-300">Staff</button>
+            <button onclick="showTab('moderacionTab')" class="w-32 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition duration-300">Moderación</button>
+            <button onclick="showTab('multasTab')" class="w-32 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-300">Multas</button>
+        </div>
+
+        <!-- USUARIOS -->
+        <div id="usuariosTab" class="tab active">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Agregar Usuario</h2>
+            <div class="mb-4">
+                <label for="newUser" class="text-sm font-medium">Usuario</label>
+                <input id="newUser" type="text" placeholder="Usuario nuevo" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-6">
+                <label for="newPass" class="text-sm font-medium">Contraseña</label>
+                <input id="newPass" type="password" placeholder="Contraseña" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <button onclick="addUser()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300">Guardar Usuario</button>
+            <p id="addUserMsg" class="text-green-600 mt-3 hidden">✅ Usuario guardado</p>
+
+            <h3 class="mt-6 text-lg font-semibold text-gray-700">Usuarios Registrados</h3>
+            <ul id="userList" class="list-disc ml-6 text-sm"></ul>
+        </div>
+
+        <!-- STAFF -->
+        <div id="staffTab" class="tab">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Agregar Staff</h2>
+            <div class="mb-4">
+                <label for="staffName" class="text-sm font-medium">Nombre</label>
+                <input id="staffName" type="text" placeholder="Nombre del staff" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-6">
+                <label for="staffRole" class="text-sm font-medium">Rol</label>
+                <input id="staffRole" type="text" placeholder="Rol del staff" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <button onclick="addStaff()" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition duration-300">Guardar Staff</button>
+            <ul id="staffList" class="list-disc ml-6 mt-6 text-sm"></ul>
+        </div>
+
+        <!-- MODERACIÓN -->
+        <div id="moderacionTab" class="tab">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Nueva Moderación</h2>
+            <div class="mb-4">
+                <label for="incUser" class="text-sm font-medium">Usuario</label>
+                <input id="incUser" type="text" placeholder="Usuario" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-4">
+                <label for="incMotivo" class="text-sm font-medium">Motivo</label>
+                <input id="incMotivo" type="text" placeholder="Motivo de la moderación" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-6">
+                <label for="incFecha" class="text-sm font-medium">Fecha</label>
+                <input id="incFecha" type="date" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <button onclick="addIncidencia()" class="w-full bg-yellow-600 text-white py-3 rounded-lg hover:bg-yellow-700 transition duration-300">Guardar Moderación</button>
+            <h3 class="mt-6 text-lg font-semibold text-gray-700">Incidencias Registradas</h3>
+            <ul id="incList" class="list-disc ml-6 mt-6 text-sm"></ul>
+        </div>
+
+        <!-- MULTAS -->
+        <div id="multasTab" class="tab">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Registrar Multa</h2>
+            <div class="mb-4">
+                <label for="multaUser" class="text-sm font-medium">Usuario</label>
+                <input id="multaUser" type="text" placeholder="Usuario" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-4">
+                <label for="multaMotivo" class="text-sm font-medium">Motivo</label>
+                <input id="multaMotivo" type="text" placeholder="Motivo de la multa" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-6">
+                <label for="multaCantidad" class="text-sm font-medium">Cantidad (€)</label>
+                <input id="multaCantidad" type="number" placeholder="Cantidad (€)" class="w-full p-3 border border-gray-300 rounded mt-1" />
+            </div>
+            <div class="mb-6">
+                <label for="multaEstado" class="text-sm font-medium">Estado</label>
+                <select id="multaEstado" class="w-full p-3 border border-gray-300 rounded mt-1">
+                    <option value="No pagada">No pagada</option>
+                    <option value="Pagada">Pagada</option>
+                </select>
+            </div>
+            <button onclick="addMulta()" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition duration-300">Guardar Multa</button>
+            <ul id="multaList" class="list-disc ml-6 mt-6 text-sm"></ul>
         </div>
     </div>
 
     <script>
-        async function checkLogin() {
-            const user = document.getElementById("loginUser").value.trim();
-            const pass = document.getElementById("loginPass").value.trim();
-            const errorMsg = document.getElementById("loginError");
+        // LocalStorage: carga inicial
+        const defaultUsers = [{ user: "admin", pass: "admin" }];
+        const defaultStaff = [{ user: "admin", role: "Administrador" }];
+        if (!localStorage.getItem("users")) {
+            localStorage.setItem("users", JSON.stringify(defaultUsers));
+        }
+        if (!localStorage.getItem("staff")) {
+            localStorage.setItem("staff", JSON.stringify(defaultStaff));
+        }
 
-            if (user === "" || pass === "") {
-                errorMsg.textContent = "Por favor, rellena ambos campos.";
-                errorMsg.classList.remove("hidden");
-                return;
+        // Funciones del sistema
+        let currentUser = null;
+
+        function checkLogin() {
+            const users = JSON.parse(localStorage.getItem("users"));
+            const user = document.getElementById("loginUser").value;
+            const pass = document.getElementById("loginPass").value;
+
+            const foundUser = users.find(u => u.user === user && u.pass === pass);
+            if (foundUser) {
+                currentUser = foundUser;
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("mainContent").classList.remove("hidden");
+                loadLists();
+            } else {
+                document.getElementById("loginError").classList.remove("hidden");
             }
+        }
 
-            try {
-                // Conecta a la API de SheetDB
-                const response = await fetch("https://sheetdb.io/api/v1/o2lxnf9sqn6ro");
-                const data = await response.json();
+        function showTab(tab) {
+            document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+            document.getElementById(tab).classList.add("active");
+        }
 
-                // Buscar si el usuario y la contraseña coinciden
-                const userExists = data.find(entry => entry.discord_username === user && entry.password === pass);
+        function addUser() {
+            const user = document.getElementById("newUser").value;
+            const pass = document.getElementById("newPass").value;
+            const users = JSON.parse(localStorage.getItem("users"));
+            users.push({ user, pass });
+            localStorage.setItem("users", JSON.stringify(users));
+            document.getElementById("addUserMsg").classList.remove("hidden");
+            loadUserList();
+        }
 
-                if (userExists) {
-                    // Si las credenciales son correctas, mostrar el contenido del dashboard
-                    document.getElementById("loginScreen").classList.add("hidden");
-                    document.getElementById("mainContent").classList.remove("hidden");
-                } else {
-                    // Si no, mostrar error
-                    errorMsg.classList.remove("hidden");
-                }
-            } catch (error) {
-                console.error("Error al verificar las credenciales:", error);
-                errorMsg.textContent = "Hubo un error al verificar las credenciales. Intenta de nuevo.";
-                errorMsg.classList.remove("hidden");
-            }
+        function loadUserList() {
+            const users = JSON.parse(localStorage.getItem("users"));
+            const list = document.getElementById("userList");
+            list.innerHTML = "";
+            users.forEach(u => {
+                const li = document.createElement("li");
+                li.textContent = u.user;
+                list.appendChild(li);
+            });
+        }
+
+        function addStaff() {
+            const name = document.getElementById("staffName").value;
+            const role = document.getElementById("staffRole").value;
+            const staff = JSON.parse(localStorage.getItem("staff"));
+            staff.push({ name, role });
+            localStorage.setItem("staff", JSON.stringify(staff));
+            loadStaffList();
+        }
+
+        function loadStaffList() {
+            const staff = JSON.parse(localStorage.getItem("staff"));
+            const list = document.getElementById("staffList");
+            list.innerHTML = "";
+            staff.forEach(s => {
+                const li = document.createElement("li");
+                li.textContent = `${s.name} - ${s.role}`;
+                list.appendChild(li);
+            });
+        }
+
+        function addIncidencia() {
+            const user = document.getElementById("incUser").value;
+            const motivo = document.getElementById("incMotivo").value;
+            const fecha = document.getElementById("incFecha").value;
+            const incidencias = JSON.parse(localStorage.getItem("incidencias")) || [];
+            incidencias.push({ user, motivo, fecha });
+            localStorage.setItem("incidencias", JSON.stringify(incidencias));
+            loadIncidencias();
+        }
+
+        function loadIncidencias() {
+            const incidencias = JSON.parse(localStorage.getItem("incidencias")) || [];
+            const list = document.getElementById("incList");
+            list.innerHTML = "";
+            incidencias.forEach(i => {
+                const li = document.createElement("li");
+                li.textContent = `${i.user} - ${i.motivo} - ${i.fecha}`;
+                list.appendChild(li);
+            });
+        }
+
+        function addMulta() {
+            const user = document.getElementById("multaUser").value;
+            const motivo = document.getElementById("multaMotivo").value;
+            const cantidad = document.getElementById("multaCantidad").value;
+            const estado = document.getElementById("multaEstado").value;
+            const multas = JSON.parse(localStorage.getItem("multas")) || [];
+            multas.push({ user, motivo, cantidad, estado });
+            localStorage.setItem("multas", JSON.stringify(multas));
+            loadMultas();
+        }
+
+        function loadMultas() {
+            const multas = JSON.parse(localStorage.getItem("multas")) || [];
+            const list = document.getElementById("multaList");
+            list.innerHTML = "";
+            multas.forEach(m => {
+                const li = document.createElement("li");
+                li.textContent = `${m.user} - ${m.motivo} - ${m.cantidad}€ - ${m.estado}`;
+                list.appendChild(li);
+            });
         }
     </script>
 </body>
 </html>
-
